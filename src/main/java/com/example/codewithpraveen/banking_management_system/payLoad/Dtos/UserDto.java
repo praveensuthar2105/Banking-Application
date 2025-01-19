@@ -1,4 +1,4 @@
-package com.example.codewithpraveen.banking_management_system.payLoad;
+package com.example.codewithpraveen.banking_management_system.payLoad.Dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

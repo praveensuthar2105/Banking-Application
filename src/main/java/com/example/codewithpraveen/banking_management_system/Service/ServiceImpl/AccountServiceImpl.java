@@ -1,13 +1,15 @@
 package com.example.codewithpraveen.banking_management_system.Service.ServiceImpl;
 
 import com.example.codewithpraveen.banking_management_system.Entites.Account;
+import com.example.codewithpraveen.banking_management_system.Entites.Branch;
 import com.example.codewithpraveen.banking_management_system.Entites.User;
 import com.example.codewithpraveen.banking_management_system.Exceptions.ResourceNotFoundException;
 import com.example.codewithpraveen.banking_management_system.Repository.AccountRepo;
+import com.example.codewithpraveen.banking_management_system.Repository.BranchRepo;
 import com.example.codewithpraveen.banking_management_system.Repository.UserRepo;
 import com.example.codewithpraveen.banking_management_system.Service.AccountService;
 import com.example.codewithpraveen.banking_management_system.config.AppConstant;
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.AccountDto;
 import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
 import com.example.codewithpraveen.banking_management_system.payLoad.GenerateNumber;
 import com.example.codewithpraveen.banking_management_system.payLoad.MoneyTrasferReq;
@@ -30,16 +32,22 @@ public class AccountServiceImpl  implements AccountService  {
 	@Autowired
 	private UserRepo userRepo;
 	
+	@Autowired
+	private BranchRepo branchRepo;
+	
 	
 	
 	@Override
-	public AccountDto createAccount(AccountDto accountDto, String username) {
+	public AccountDto createAccount(AccountDto accountDto, String username , String branchCode) {
 		
 		User user = this.userRepo.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User" , "Email" , username));
 		Account account = this.modelMapper.map(accountDto, Account.class);
+		Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch" , "BranchCode" , branchCode));
+		
+		
 		account.setUser(user);
 		account.setAccountNumber(GenerateNumber.generateUniqueNumber(AppConstant.ACCOUNT_NUMBER_DIGIT));
-		account.setBranch(AppConstant.DEFUALT_BRANCH);
+		account.setBranch(branch);
 		account.setStatus("Active");
 		account.setBalance(0.0);
 		if (Objects.requireNonNull(account.getAccountType()) == AccountType.CURRENT) {
@@ -60,10 +68,12 @@ public class AccountServiceImpl  implements AccountService  {
 	}
 	
 	@Override
-	public AccountDto updateAccount(AccountDto accountDto, long accountNumber) {
+	public AccountDto updateAccount(AccountDto accountDto, long accountNumber , String branchCode) {
 		Account account = this.accountRepo.findByAccountNumber(accountNumber).orElseThrow(() -> new ResourceNotFoundException("Account" , "Account Number" , accountNumber));
+		Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch" , "BranchCode" , branchCode));
+		account.setBranch(branch);
 		account.setAccountType(accountDto.getAccountType());
-		account.setBranch(accountDto.getBranch());
+		
 		account.setStatus(accountDto.getStatus());
      	account.setBalance(accountDto.getBalance());
 //		account.setInterestRate(accountDto.getInterestRate());
@@ -121,10 +131,11 @@ public class AccountServiceImpl  implements AccountService  {
 	}
 	
 	@Override
-	public List<AccountDto> getAccountByBranch(String branch) {
-		List<Account> accounts = this.accountRepo.findByBranch(branch);
+	public List<AccountDto> getAccountByBranch(String branchCode) {
+		Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch" , "BranchCode" , branchCode));
+		List<Account>  accounts = this.accountRepo.findByBranch(branch);
 		if(accounts.isEmpty()) {
-			throw  new ResourceNotFoundException("Account" , "Branch" , branch);
+			throw  new ResourceNotFoundException("Account" , "Branch" , branchCode);
 		}
 		
 		return accounts.stream().map(account -> this.modelMapper.map(accounts , AccountDto.class))

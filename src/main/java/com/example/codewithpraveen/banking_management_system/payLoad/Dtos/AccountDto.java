@@ -1,7 +1,7 @@
-package com.example.codewithpraveen.banking_management_system.payLoad;
+package com.example.codewithpraveen.banking_management_system.payLoad.Dtos;
 
-import com.example.codewithpraveen.banking_management_system.Entites.User;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,19 +13,27 @@ import lombok.Setter;
 public class AccountDto {
 	private long accountNumber;
 	
+	@NotEmpty
 	private AccountType accountType;
 	
+	@NotEmpty
 	private double balance;
 	
 	
 //	private User user;
 	
+	@NotEmpty
 	private String status;
 	
+	@NotEmpty
 	private double interestRate;
 	
-	private String branch;
+//	@NotEmpty
+//	private String branch;
+	
 	
 	private UserDto user;
+	
+	private BranchDto branch;
 	
 }

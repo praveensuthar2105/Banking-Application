@@ -30,6 +30,9 @@ public class User {
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
     private List<Account> accounts = new ArrayList<>();
 
-
-
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
+    private  List<Loan> loans = new ArrayList<>();
+    
+//    @ManyToOne
+//    private Branch branch;
 }

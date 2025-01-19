@@ -23,7 +23,14 @@ public class GenerateNumber {
 			number = min + ((long) (random.nextDouble() * (max - min)));
 		} while (generatedNumbers.contains(number));
 		
-		generatedNumbers.add(number);
+		if (number < 0) {
+			number = -number;
+			generatedNumbers.add(number);
+		} else {
+			generatedNumbers.add(number);
+		}
+		
+		
 		return  number;
 	}
 	

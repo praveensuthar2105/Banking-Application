@@ -4,7 +4,7 @@ import com.example.codewithpraveen.banking_management_system.Entites.User;
 import com.example.codewithpraveen.banking_management_system.Exceptions.ResourceNotFoundException;
 import com.example.codewithpraveen.banking_management_system.Repository.UserRepo;
 import com.example.codewithpraveen.banking_management_system.Service.UserService;
-import com.example.codewithpraveen.banking_management_system.payLoad.UserDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.example.codewithpraveen.banking_management_system.Service;
 
 
-import com.example.codewithpraveen.banking_management_system.payLoad.UserDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.UserDto;
 
 import java.util.List;
 

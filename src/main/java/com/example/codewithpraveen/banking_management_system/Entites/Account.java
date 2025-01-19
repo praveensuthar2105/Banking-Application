@@ -25,7 +25,8 @@ public class Account {
 	
 	private double interestRate;
 	
-	private String branch;
+//	private String branch;
 	
-	
+	@ManyToOne
+	private  Branch branch;
 }

@@ -2,7 +2,7 @@ package com.example.codewithpraveen.banking_management_system.Controller;
 
 
 import com.example.codewithpraveen.banking_management_system.Service.AccountService;
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.AccountDto;
 import com.example.codewithpraveen.banking_management_system.payLoad.ApiResponse;
 import com.example.codewithpraveen.banking_management_system.payLoad.MoneyTrasferReq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +20,15 @@ public class AccountController {
 	private AccountService accountService;
 	
 	// create account
-	@PostMapping(value = "/create/{username}" , produces = "application/json")
-	public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto , @PathVariable String username) {
-	  AccountDto createdAccount = this.accountService.createAccount(accountDto, username);
+	@PostMapping(value = "/create/{branchCode}/{username}" , produces = "application/json")
+	public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto , @PathVariable String username , @PathVariable String branchCode) {
+	  AccountDto createdAccount = this.accountService.createAccount(accountDto, username , branchCode);
 	  return new ResponseEntity<>(createdAccount , HttpStatus.CREATED);
 	}
 	
-	@PostMapping(value = "/{accountNumber}" , produces = "application/json")
-	public  ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto , @PathVariable long accountNumber) {
-		AccountDto updatedAccount = accountService.updateAccount(accountDto , accountNumber);
+	@PostMapping(value = "/{accountNumber}/{branchCode}" , produces = "application/json")
+	public  ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto , @PathVariable long accountNumber , @PathVariable String branchCode) {
+		AccountDto updatedAccount = accountService.updateAccount(accountDto , accountNumber , branchCode);
 		return new ResponseEntity<>(updatedAccount , HttpStatus.OK);
 	}
 	

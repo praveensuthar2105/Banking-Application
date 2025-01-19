@@ -1,5 +1,8 @@
 package com.example.codewithpraveen.banking_management_system.payLoad;
 
-public @interface Size {
-
+public enum Status {
+	ACTIVE,
+	INACTIVE,
+	DELETED
+	
 }

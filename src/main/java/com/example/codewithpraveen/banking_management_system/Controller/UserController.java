@@ -2,7 +2,7 @@ package com.example.codewithpraveen.banking_management_system.Controller;
 
 import com.example.codewithpraveen.banking_management_system.Service.UserService;
 import com.example.codewithpraveen.banking_management_system.payLoad.ApiResponse;
-import com.example.codewithpraveen.banking_management_system.payLoad.UserDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.UserDto;
 
 import jakarta.validation.Valid;
 
