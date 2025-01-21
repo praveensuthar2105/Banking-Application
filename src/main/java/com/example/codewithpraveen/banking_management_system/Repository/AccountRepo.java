@@ -3,7 +3,7 @@ package com.example.codewithpraveen.banking_management_system.Repository;
 import com.example.codewithpraveen.banking_management_system.Entites.Account;
 import com.example.codewithpraveen.banking_management_system.Entites.Branch;
 import com.example.codewithpraveen.banking_management_system.Entites.User;
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.AccountType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

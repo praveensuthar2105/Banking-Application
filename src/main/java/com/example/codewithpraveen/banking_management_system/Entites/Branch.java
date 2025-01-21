@@ -1,7 +1,7 @@
 package com.example.codewithpraveen.banking_management_system.Entites;
 
-import com.example.codewithpraveen.banking_management_system.payLoad.BranchType;
-import com.example.codewithpraveen.banking_management_system.payLoad.Status;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.BranchType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -37,8 +37,11 @@ public class Branch {
 	
 	private Status branchStatus;
 	
-//	@OneToMany(mappedBy = "branch" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
-//	private List<User> users = new ArrayList<>();
+
 	@OneToMany(mappedBy = "branch" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
 	private List<Account> accounts = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "branch" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
+	private  List<Employee> employees = new ArrayList<>();
+	
 }

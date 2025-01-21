@@ -1,4 +1,4 @@
-package com.example.codewithpraveen.banking_management_system.payLoad;
+package com.example.codewithpraveen.banking_management_system.payLoad.allEnum;
 
 public enum LoanType {
 	HOME_LOAN,

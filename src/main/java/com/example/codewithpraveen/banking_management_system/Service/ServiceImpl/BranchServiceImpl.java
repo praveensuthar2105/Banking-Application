@@ -5,7 +5,7 @@ import com.example.codewithpraveen.banking_management_system.Exceptions.Resource
 import com.example.codewithpraveen.banking_management_system.Repository.BranchRepo;
 import com.example.codewithpraveen.banking_management_system.Service.BranchService;
 import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.BranchDto;
-import com.example.codewithpraveen.banking_management_system.payLoad.Status;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.Status;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

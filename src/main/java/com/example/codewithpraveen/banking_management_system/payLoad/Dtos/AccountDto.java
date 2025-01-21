@@ -1,6 +1,6 @@
 package com.example.codewithpraveen.banking_management_system.payLoad.Dtos;
 
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.AccountType;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.Getter;

@@ -10,7 +10,7 @@ import com.example.codewithpraveen.banking_management_system.Repository.UserRepo
 import com.example.codewithpraveen.banking_management_system.Service.AccountService;
 import com.example.codewithpraveen.banking_management_system.config.AppConstant;
 import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.AccountDto;
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.AccountType;
 import com.example.codewithpraveen.banking_management_system.payLoad.GenerateNumber;
 import com.example.codewithpraveen.banking_management_system.payLoad.MoneyTrasferReq;
 import org.modelmapper.ModelMapper;

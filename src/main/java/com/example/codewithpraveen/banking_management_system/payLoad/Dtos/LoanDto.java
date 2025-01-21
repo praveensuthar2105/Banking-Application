@@ -1,12 +1,9 @@
 package com.example.codewithpraveen.banking_management_system.payLoad.Dtos;
 
-import com.example.codewithpraveen.banking_management_system.Entites.User;
-import com.example.codewithpraveen.banking_management_system.payLoad.LoanType;
-import jakarta.persistence.ManyToOne;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.LoanType;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 

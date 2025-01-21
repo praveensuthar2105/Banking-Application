@@ -14,6 +14,6 @@ public class AppConstant {
 	public static final double  GOLD_LOAN = 12.0;
 	public static final double  EDUCATION_LOAN = 7.0;
 	public static final double  OTHERS = 15.0;
-	
+	public static final int EMPLOYEE_Id_Digit = 6;
 
 }

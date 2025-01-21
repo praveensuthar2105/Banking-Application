@@ -1,8 +1,7 @@
 package com.example.codewithpraveen.banking_management_system.payLoad.Dtos;
 
-import com.example.codewithpraveen.banking_management_system.Entites.User;
-import com.example.codewithpraveen.banking_management_system.payLoad.BranchType;
-import com.example.codewithpraveen.banking_management_system.payLoad.Status;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.BranchType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

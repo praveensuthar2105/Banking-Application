@@ -1,7 +1,7 @@
 package com.example.codewithpraveen.banking_management_system.Entites;
 
 
-import com.example.codewithpraveen.banking_management_system.payLoad.AccountType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.AccountType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

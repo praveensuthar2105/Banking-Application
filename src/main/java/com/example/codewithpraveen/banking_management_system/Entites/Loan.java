@@ -1,6 +1,6 @@
 package com.example.codewithpraveen.banking_management_system.Entites;
 
-import com.example.codewithpraveen.banking_management_system.payLoad.LoanType;
+import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.LoanType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -8,8 +8,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.Month;
 
 @Entity
 @Table(name = "loan")
