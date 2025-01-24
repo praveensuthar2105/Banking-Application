@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Getter
 @Setter
@@ -33,6 +36,8 @@ public class UserDto {
 
     @NotEmpty
     private String address;
+    
+    private Set<RoleDto> roles = new HashSet<>();
     
 //    private List<AccountDto> accounts;
 

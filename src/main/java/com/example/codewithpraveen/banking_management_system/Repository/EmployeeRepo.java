@@ -6,11 +6,12 @@ import com.example.codewithpraveen.banking_management_system.Entites.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EmployeeRepo extends JpaRepository<Employee, Long> {
 	Employee findEmployeeByEmployeeEmail(String email);
 	List<Employee> findByBranch(Branch branch);
 	
-	List<Employee> findByRole(Role role);
+	List<Employee> findByRoles(Set<Role> roles);
 
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -37,7 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		Employee employee = this.modelMapper.map(employeeDto , Employee.class);
 		employee.setEmployeeId(GenerateNumber.generateUniqueNumber(AppConstant.EMPLOYEE_Id_Digit));
-		employee.setRole(null);
+		Role role = this.roleRepo.findByRoleId(10);
+		employee.getRoles().add(role);
 		Employee savedEmployee = this.employeeRepo.save(employee);
 		
 		return this.modelMapper.map(savedEmployee , EmployeeDto.class);
@@ -62,8 +64,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public EmployeeDto assignEmployeeToBranch(long employeeId, String branchCode, long RoleAssignerId) {
 		Employee roleAssigner = this.employeeRepo.findById(RoleAssignerId).orElseThrow(() -> new ResourceNotFoundException("Employee" , "EmployeeId" , RoleAssignerId));
 		Employee employee = this.employeeRepo.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException("Employee" , "EmployeeId" , employeeId));
-		if(roleAssigner.getRole().getRoleName().equals("HR") || roleAssigner.getRole().getRoleName().equals("RegionManager")) {
-			Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch" , "BranchCode" , branchCode));
+//		if(roleAssigner.getRoles().equals("HR") || roleAssigner.getRoles().equals("RegionManager")) {
+//			Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch" , "BranchCode" , branchCode));
+//			employee.setBranch(branch);
+//		}
+		if (roleAssigner.getRoles().stream().anyMatch(r -> r.getRoleName().equals("HR") || r.getRoleName().equals("RegionManager"))) {
+			Branch branch = this.branchRepo.findByBranchCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch", "BranchCode", branchCode));
 			employee.setBranch(branch);
 		}
 		Employee savedEmployee = this.employeeRepo.save(employee);
@@ -76,8 +82,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee roleAssigner = this.employeeRepo.findById(RoleAssignerId).orElseThrow(()-> new ResourceNotFoundException("Employee" , "EmployeeId" , RoleAssignerId));
 		Employee employee = this.employeeRepo.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException("Employee" , "EmployeeId" , employeeId));
 		Role role =  this.roleRepo.findByRoleName(roleName);
-		if(roleAssigner.getRole().getRoleName().equals("HR") || roleAssigner.getRole().getRoleName().equals("RegionManager") || roleAssigner.getRole().getRoleName().equals("BranchManager")) {
-			employee.setRole(role);
+		if(roleAssigner.getRoles().stream().anyMatch(r -> r.getRoleName().equals("HR") || r.getRoleName().equals("RegionManager"))) {
+			employee.getRoles().add(role);
 		}
 //		Role savedRole = this.roleRepo.save(role);
 		Employee savedEmployee = this.employeeRepo.save(employee);
@@ -112,11 +118,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 	
 	@Override
-	public List<EmployeeDto> getEmployeeByRole(Integer roleId) {
-		Role role = this.roleRepo.findByRoleId(roleId);
-		List<Employee> employees = this.employeeRepo.findByRole(role);
-		return employees.stream().map(employee -> this.modelMapper.map(employee , EmployeeDto.class)).toList();
-	}
+public List<EmployeeDto> getEmployeeByRole(Integer roleId) {
+	Role role = this.roleRepo.findByRoleId(roleId);
+	Set<Role> roles = Set.of(role);
+	List<Employee> employees = this.employeeRepo.findByRoles(roles);
+	return employees.stream().map(employee -> this.modelMapper.map(employee , EmployeeDto.class)).toList();
+}
 	
 	
 }

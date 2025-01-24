@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Data
@@ -22,7 +25,7 @@ public class EmployeeDto {
 	private String employeeZipCode;
 	
 //	private RoleEnum employeeRole;
-	private RoleDto role;
+	private Set<RoleDto> roles = new HashSet<>();
 	
 	private BranchDto branch;
 	

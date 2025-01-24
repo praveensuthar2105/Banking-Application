@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Entity
 @Getter
@@ -19,6 +18,14 @@ public class Role {
 	
 	private String roleName;
 	
-	@OneToMany(mappedBy = "role" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
-	private List<Employee> employees = new ArrayList<>();
+//	@OneToMany(mappedBy = "role" , cascade = CascadeType.ALL , fetch  = FetchType.LAZY)
+//	private List<Employee> employees = new ArrayList<>();
+//
+//	@ManyToMany(cascade = CascadeType.ALL , fetch  = FetchType.LAZY )
+//	private  List<User> users = new ArrayList<>();
+//
+//	@ManyToMany(mappedBy = "roles")
+//	private Collection<User> users;
+
+
 }

@@ -1,11 +1,12 @@
 package com.example.codewithpraveen.banking_management_system.Entites;
 
 import com.example.codewithpraveen.banking_management_system.payLoad.allEnum.RoleEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -27,6 +28,7 @@ public class Employee {
 	@ManyToOne
 	private Branch branch;
 	
-	@ManyToOne
-	private Role role;
+	@ManyToMany(cascade = CascadeType.ALL , fetch  = FetchType.EAGER )
+	@JoinTable(name = "employee_role" , joinColumns = @JoinColumn(name = "employee_id" , referencedColumnName = "employeeId") , inverseJoinColumns = @JoinColumn(name = "role_id" , referencedColumnName = "roleId"))
+	private Set<Role> roles = new HashSet<>();
 }
