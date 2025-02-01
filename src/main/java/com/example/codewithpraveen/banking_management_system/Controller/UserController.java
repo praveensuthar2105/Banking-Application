@@ -11,6 +11,7 @@ import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.UserDt
 import com.example.codewithpraveen.banking_management_system.payLoad.JwtResponse;
 import jakarta.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,9 @@ public class UserController {
     private JwtService jwtService;
     
     @Autowired
+    private ModelMapper modelMapper;
+    
+    @Autowired
     private UserRepo userRepo;
     
     
@@ -53,6 +57,7 @@ public class UserController {
     }
     
     //    update user
+    @PreAuthorize("hasRole('User')")
     @PutMapping(value = "/{id}" , produces = "application/json")
     public ResponseEntity<UserDto> updateUser( @Valid @RequestBody UserDto userDto, @PathVariable Integer id) {
         UserDto updatedUser = userService.updateUser(userDto, id);
@@ -60,24 +65,21 @@ public class UserController {
     }
 //    delete users by id
 //    @PreAuthorize("hasRole('User')")
+@PreAuthorize("hasRole('User')")
     @DeleteMapping(value = "/{id}" , produces = "application/json")
     public  ResponseEntity<ApiResponse> deleteUser(@PathVariable Integer id) {
         this.userService.deleteUser(id);
         return new ResponseEntity<>(new ApiResponse( "User deleted successfully" , true ), HttpStatus.OK);
     }
-   
-   
+    
     //    get all users
     @GetMapping(value = "/" , produces = "application/json")
     public ResponseEntity<List<UserDto>> getAllUsers() {
       return ResponseEntity.ok(this.userService.getAllUsers());
     }
     
-    
-
-
-
 //    get user email
+    @PreAuthorize("hasRole('User')")
  @GetMapping(value = "/{email}" , produces = "application/json")
   public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(this.userService.getUserByEmail(email));
@@ -89,7 +91,8 @@ public class UserController {
      
      String token = jwtService.generateToken(authRequest.getUsername());
      User user = userRepo.findByEmail(authRequest.getUsername()).get();
-     JwtResponse jwtResponse = new JwtResponse( user, token);
+     UserDto userDto = modelMapper.map(user, UserDto.class);
+     JwtResponse jwtResponse = new JwtResponse( userDto, token);
      return ResponseEntity.ok(jwtResponse);
      
     }

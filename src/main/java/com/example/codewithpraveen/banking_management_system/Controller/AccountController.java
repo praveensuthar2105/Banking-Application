@@ -8,9 +8,12 @@ import com.example.codewithpraveen.banking_management_system.payLoad.MoneyTrasfe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("api/account")
@@ -20,25 +23,27 @@ public class AccountController {
 	private AccountService accountService;
 	
 	// create account
+	@PreAuthorize("hasRole('User')")
 	@PostMapping(value = "/create/{branchCode}/{username}" , produces = "application/json")
 	public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto , @PathVariable String username , @PathVariable String branchCode) {
 	  AccountDto createdAccount = this.accountService.createAccount(accountDto, username , branchCode);
 	  return new ResponseEntity<>(createdAccount , HttpStatus.CREATED);
 	}
-	
+	@PreAuthorize("hasRole('User')")
 	@PostMapping(value = "/{accountNumber}/{branchCode}" , produces = "application/json")
 	public  ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto , @PathVariable long accountNumber , @PathVariable String branchCode) {
 		AccountDto updatedAccount = accountService.updateAccount(accountDto , accountNumber , branchCode);
 		return new ResponseEntity<>(updatedAccount , HttpStatus.OK);
 	}
-	
-	@GetMapping(value = "/{accountNumber}" ,  produces = "application/json")
+//	@PreAuthorize("hasRole('User')")
+	 @GetMapping(value = "/{accountNumber}" ,  produces = "application/json")
 	public ResponseEntity<AccountDto> getAccountByAccountNumber(@PathVariable long accountNumber) {
 	
 		AccountDto accountDto = this.accountService.getAccountByAccountNumber(accountNumber);
 		return new ResponseEntity<>(accountDto , HttpStatus.OK);
 		
 	}
+	@PreAuthorize("hasRole('User')")
 	@DeleteMapping(value =  "/{accountNumber}" , produces = "application/json")
 	public  ResponseEntity<ApiResponse> deleteAccount(@PathVariable long accountNumber) {
 		
