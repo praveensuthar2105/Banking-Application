@@ -13,6 +13,7 @@ import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.Employ
 import com.example.codewithpraveen.banking_management_system.payLoad.GenerateNumber;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,13 +34,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private RoleRepo roleRepo;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	@Override
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
 		
 		Employee employee = this.modelMapper.map(employeeDto , Employee.class);
 		employee.setEmployeeId(GenerateNumber.generateUniqueNumber(AppConstant.EMPLOYEE_Id_Digit));
-		Role role = this.roleRepo.findByRoleId(10);
-		employee.getRoles().add(role);
+//		Role role = this.roleRepo.findByRoleId(10);
+		employee.getRoles().add(null);
+		employee.setPassword(this.passwordEncoder.encode(employeeDto.getPassword()));
 		Employee savedEmployee = this.employeeRepo.save(employee);
 		
 		return this.modelMapper.map(savedEmployee , EmployeeDto.class);

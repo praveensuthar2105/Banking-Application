@@ -23,13 +23,13 @@ public class AccountController {
 	private AccountService accountService;
 	
 	// create account
-	@PreAuthorize("hasRole('User')")
+//	@PreAuthorize("hasRole('User')")
 	@PostMapping(value = "/create/{branchCode}/{username}" , produces = "application/json")
 	public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto , @PathVariable String username , @PathVariable String branchCode) {
 	  AccountDto createdAccount = this.accountService.createAccount(accountDto, username , branchCode);
 	  return new ResponseEntity<>(createdAccount , HttpStatus.CREATED);
 	}
-	@PreAuthorize("hasRole('User')")
+//	@PreAuthorize("hasRole('User')")
 	@PostMapping(value = "/{accountNumber}/{branchCode}" , produces = "application/json")
 	public  ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto , @PathVariable long accountNumber , @PathVariable String branchCode) {
 		AccountDto updatedAccount = accountService.updateAccount(accountDto , accountNumber , branchCode);
@@ -43,7 +43,7 @@ public class AccountController {
 		return new ResponseEntity<>(accountDto , HttpStatus.OK);
 		
 	}
-	@PreAuthorize("hasRole('User')")
+//	@PreAuthorize("hasRole('User')")
 	@DeleteMapping(value =  "/{accountNumber}" , produces = "application/json")
 	public  ResponseEntity<ApiResponse> deleteAccount(@PathVariable long accountNumber) {
 		

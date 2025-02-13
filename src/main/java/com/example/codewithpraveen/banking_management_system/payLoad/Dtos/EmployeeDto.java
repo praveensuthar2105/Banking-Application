@@ -24,6 +24,7 @@ public class EmployeeDto {
 	
 	private String employeeZipCode;
 	
+	private String password;
 //	private RoleEnum employeeRole;
 	private Set<RoleDto> roles = new HashSet<>();
 	

@@ -24,6 +24,8 @@ public class Employee {
 	
 	private String employeeZipCode;
 	
+	private String password;
+	
 	
 	@ManyToOne
 	private Branch branch;
@@ -31,4 +33,7 @@ public class Employee {
 	@ManyToMany(cascade = CascadeType.ALL , fetch  = FetchType.EAGER )
 	@JoinTable(name = "employee_role" , joinColumns = @JoinColumn(name = "employee_id" , referencedColumnName = "employeeId") , inverseJoinColumns = @JoinColumn(name = "role_id" , referencedColumnName = "roleId"))
 	private Set<Role> roles = new HashSet<>();
+	
+	
+	
 }

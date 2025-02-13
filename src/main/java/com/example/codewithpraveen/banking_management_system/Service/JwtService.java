@@ -17,15 +17,16 @@ import java.util.Date;
 @Service
 public class JwtService {
 	private  static  final String SECRET_KEY = "your-256-bit-secret-key-which-is-at-least-32-bytes-long";
-	private  static final long ACCESS_TOKEN_VALIDITY = 24*5*60*1000;
+	private  static final long ACCESS_TOKEN_VALIDITY = 60*60*60*60;
 //	private static final long REFRESH_TOKEN_VALIDITY = 48*60*60*1000;
 	
 	private static SecretKey getSignKey() {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	}
 	
-	public String generateToken(String username) {
+	public String generateToken(String username , String role) {
 		Map<String , Object> claims = new HashMap<>();
+		claims.put("role", role);
 		return createToken( claims, username);
 	}
 	

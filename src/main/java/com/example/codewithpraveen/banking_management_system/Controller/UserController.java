@@ -89,8 +89,9 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
      
-     String token = jwtService.generateToken(authRequest.getUsername());
+//     String token = jwtService.generateToken(authRequest.getUsername() . auth);
      User user = userRepo.findByEmail(authRequest.getUsername()).get();
+        String token = jwtService.generateToken(authRequest.getUsername() , user.getRoles().toString());
      UserDto userDto = modelMapper.map(user, UserDto.class);
      JwtResponse jwtResponse = new JwtResponse( userDto, token);
      return ResponseEntity.ok(jwtResponse);

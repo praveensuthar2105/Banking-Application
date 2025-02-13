@@ -1,11 +1,21 @@
 package com.example.codewithpraveen.banking_management_system.Controller;
 
+import com.example.codewithpraveen.banking_management_system.Entites.Employee;
+import com.example.codewithpraveen.banking_management_system.Repository.EmployeeRepo;
 import com.example.codewithpraveen.banking_management_system.Service.EmployeeService;
+import com.example.codewithpraveen.banking_management_system.Service.JwtService;
 import com.example.codewithpraveen.banking_management_system.payLoad.ApiResponse;
+import com.example.codewithpraveen.banking_management_system.payLoad.AuthRequest;
 import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.EmployeeDto;
+import com.example.codewithpraveen.banking_management_system.payLoad.EmployeeResponse;
+import com.example.codewithpraveen.banking_management_system.payLoad.JwtResponse;
+import jakarta.security.auth.message.config.AuthConfig;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +26,16 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmployeeService employeeService;
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private EmployeeRepo employeeRepo;
+	@Autowired
+	private JwtService jwtService;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	@PostMapping(value = "/addEmployee" , produces = "application/json")
 	public ResponseEntity<EmployeeDto>  addEmployee(@RequestBody EmployeeDto employeeDto) {
@@ -71,5 +91,16 @@ public class EmployeeController {
 		return new ResponseEntity<>(employeeDtos , HttpStatus.OK);
 	}
 	
+	@PostMapping(value = "/login" , produces = "application/json")
+	public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+		
+		Employee employee = employeeRepo.findEmployeeByEmployeeEmail(authRequest.getUsername());
+		String token = jwtService.generateToken(authRequest.getUsername() , employee.getRoles().toString());
+		EmployeeDto employeeDto  = modelMapper.map(employee , EmployeeDto.class);
+		EmployeeResponse employeeResponse = new EmployeeResponse(employeeDto , token);
+		return ResponseEntity.ok(employeeResponse);
+	}
 	
+
 }
