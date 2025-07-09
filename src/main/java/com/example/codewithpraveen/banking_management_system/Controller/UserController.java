@@ -7,8 +7,9 @@ import com.example.codewithpraveen.banking_management_system.Service.UserService
 import com.example.codewithpraveen.banking_management_system.payLoad.ApiResponse;
 import com.example.codewithpraveen.banking_management_system.payLoad.AuthRequest;
 import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.UserDto;
-
 import com.example.codewithpraveen.banking_management_system.payLoad.JwtResponse;
+import com.example.codewithpraveen.banking_management_system.payLoad.RefreshTokenRequest;
+import com.example.codewithpraveen.banking_management_system.payLoad.LogoutRequest;
 import jakarta.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -20,7 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 
@@ -87,21 +87,75 @@ public class UserController {
     
     @PostMapping(value = "/login" , produces = "application/json")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-     
-//     String token = jwtService.generateToken(authRequest.getUsername() . auth);
-     User user = userRepo.findByEmail(authRequest.getUsername()).get();
-        String token = jwtService.generateToken(authRequest.getUsername() , user.getRoles().toString());
-     UserDto userDto = modelMapper.map(user, UserDto.class);
-     JwtResponse jwtResponse = new JwtResponse( userDto, token);
-     return ResponseEntity.ok(jwtResponse);
-     
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+            
+            User user = userRepo.findByEmail(authRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            // Generate both access and refresh tokens
+            String accessToken = jwtService.generateAccessToken(authRequest.getUsername(), user.getRoles().toString());
+            String refreshToken = jwtService.generateRefreshToken(authRequest.getUsername());
+            
+            UserDto userDto = modelMapper.map(user, UserDto.class);
+            
+            // Calculate expiration time in seconds
+            long expiresIn = jwtService.getExpirationTime(accessToken) - System.currentTimeMillis();
+            expiresIn = expiresIn / 1000; // Convert to seconds
+            
+            JwtResponse jwtResponse = new JwtResponse(userDto, accessToken, refreshToken, expiresIn);
+            return ResponseEntity.ok(jwtResponse);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse("Invalid credentials", false));
+        }
     }
     
+    @PostMapping(value = "/refresh-token", produces = "application/json")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        try {
+            String refreshToken = refreshTokenRequest.getRefreshToken();
+            String username = jwtService.getUsernameFromToken(refreshToken);
+            
+            if (jwtService.validateRefreshToken(refreshToken, username)) {
+                User user = userRepo.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+                
+                // Generate new access token
+                String newAccessToken = jwtService.generateAccessToken(username, user.getRoles().toString());
+                
+                UserDto userDto = modelMapper.map(user, UserDto.class);
+                long expiresIn = jwtService.getExpirationTime(newAccessToken) - System.currentTimeMillis();
+                expiresIn = expiresIn / 1000;
+                
+                JwtResponse jwtResponse = new JwtResponse(userDto, newAccessToken, refreshToken, expiresIn);
+                return ResponseEntity.ok(jwtResponse);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse("Invalid refresh token", false));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse("Token refresh failed", false));
+        }
+    }
     
+    @PostMapping(value = "/logout", produces = "application/json")
+    public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
+        try {
+            // Revoke both access and refresh tokens
+            jwtService.revokeToken(logoutRequest.getAccessToken());
+            if (logoutRequest.getRefreshToken() != null) {
+                jwtService.revokeToken(logoutRequest.getRefreshToken());
+            }
+            
+            return ResponseEntity.ok(new ApiResponse("Logged out successfully", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse("Logout failed", false));
+        }
+    }
 }
-
-
-
-
-

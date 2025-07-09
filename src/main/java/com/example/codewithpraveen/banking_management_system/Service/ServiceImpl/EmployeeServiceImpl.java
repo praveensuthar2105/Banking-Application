@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,9 +43,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		Employee employee = this.modelMapper.map(employeeDto , Employee.class);
 		employee.setEmployeeId(GenerateNumber.generateUniqueNumber(AppConstant.EMPLOYEE_Id_Digit));
-//		Role role = this.roleRepo.findByRoleId(10);
-		employee.getRoles().add(null);
-		employee.setPassword(this.passwordEncoder.encode(employeeDto.getPassword()));
+		
+		// Fix: Check if password is not null before encoding
+		if (employeeDto.getPassword() != null && !employeeDto.getPassword().isEmpty()) {
+			employee.setPassword(this.passwordEncoder.encode(employeeDto.getPassword()));
+		} else {
+			throw new IllegalArgumentException("Employee password cannot be null or empty");
+		}
+		
+		// Fix: Don't add null role, initialize roles set properly
+		if (employee.getRoles() == null) {
+			employee.setRoles(new HashSet<>());
+		}
+		
+		// You can add a default role here if needed
+		// Role defaultRole = this.roleRepo.findByRoleName("EMPLOYEE");
+		// if (defaultRole != null) {
+		//     employee.getRoles().add(defaultRole);
+		// }
+		
 		Employee savedEmployee = this.employeeRepo.save(employee);
 		
 		return this.modelMapper.map(savedEmployee , EmployeeDto.class);

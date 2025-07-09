@@ -8,8 +8,8 @@ import com.example.codewithpraveen.banking_management_system.payLoad.ApiResponse
 import com.example.codewithpraveen.banking_management_system.payLoad.AuthRequest;
 import com.example.codewithpraveen.banking_management_system.payLoad.Dtos.EmployeeDto;
 import com.example.codewithpraveen.banking_management_system.payLoad.EmployeeResponse;
-import com.example.codewithpraveen.banking_management_system.payLoad.JwtResponse;
-import jakarta.security.auth.message.config.AuthConfig;
+import com.example.codewithpraveen.banking_management_system.payLoad.RefreshTokenRequest;
+import com.example.codewithpraveen.banking_management_system.payLoad.LogoutRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -93,14 +93,93 @@ public class EmployeeController {
 	
 	@PostMapping(value = "/login" , produces = "application/json")
 	public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-		
-		Employee employee = employeeRepo.findEmployeeByEmployeeEmail(authRequest.getUsername());
-		String token = jwtService.generateToken(authRequest.getUsername() , employee.getRoles().toString());
-		EmployeeDto employeeDto  = modelMapper.map(employee , EmployeeDto.class);
-		EmployeeResponse employeeResponse = new EmployeeResponse(employeeDto , token);
-		return ResponseEntity.ok(employeeResponse);
+		try {
+			authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+			);
+			
+			Employee employee = employeeRepo.findEmployeeByEmployeeEmail(authRequest.getUsername());
+			if (employee == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new ApiResponse("Employee not found", false));
+			}
+			
+			// Generate both access and refresh tokens
+			String accessToken = jwtService.generateAccessToken(authRequest.getUsername(), employee.getRoles().toString());
+			String refreshToken = jwtService.generateRefreshToken(authRequest.getUsername());
+			
+			EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
+			
+			// Calculate expiration time in seconds
+			long expiresIn = jwtService.getExpirationTime(accessToken) - System.currentTimeMillis();
+			expiresIn = expiresIn / 1000; // Convert to seconds
+			
+			// Create enhanced response with both tokens
+			EmployeeResponse employeeResponse = new EmployeeResponse(employeeDto, accessToken, refreshToken, expiresIn);
+			return ResponseEntity.ok(employeeResponse);
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ApiResponse("Invalid credentials", false));
+		}
 	}
 	
-
+	@PostMapping(value = "/refresh-token", produces = "application/json")
+	public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+		try {
+			String refreshToken = refreshTokenRequest.getRefreshToken();
+			String username = jwtService.getUsernameFromToken(refreshToken);
+			
+			if (jwtService.validateRefreshToken(refreshToken, username)) {
+				Employee employee = employeeRepo.findEmployeeByEmployeeEmail(username);
+				if (employee == null) {
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+						.body(new ApiResponse("Employee not found", false));
+				}
+				
+				// Generate new access token
+				String newAccessToken = jwtService.generateAccessToken(username, employee.getRoles().toString());
+				
+				EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
+				long expiresIn = jwtService.getExpirationTime(newAccessToken) - System.currentTimeMillis();
+				expiresIn = expiresIn / 1000;
+				
+				EmployeeResponse employeeResponse = new EmployeeResponse(employeeDto, newAccessToken, refreshToken, expiresIn);
+				return ResponseEntity.ok(employeeResponse);
+			} else {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new ApiResponse("Invalid refresh token", false));
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ApiResponse("Token refresh failed", false));
+		}
+	}
+	
+	@PostMapping(value = "/logout", produces = "application/json")
+	public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
+		try {
+			// Revoke both access and refresh tokens
+			jwtService.revokeToken(logoutRequest.getAccessToken());
+			if (logoutRequest.getRefreshToken() != null) {
+				jwtService.revokeToken(logoutRequest.getRefreshToken());
+			}
+			
+			return ResponseEntity.ok(new ApiResponse("Employee logged out successfully", true));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiResponse("Logout failed", false));
+		}
+	}
+	
+	// Temporary test endpoint - completely bypass security for testing
+	@PostMapping(value = "/test-add" , produces = "application/json")
+	public ResponseEntity<String> testAddEmployee(@RequestBody EmployeeDto employeeDto) {
+		try {
+			EmployeeDto savedEmployeeDto = this.employeeService.addEmployee(employeeDto);
+			return ResponseEntity.ok("Employee created successfully: " + savedEmployeeDto.getEmployeeName());
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+		}
+	}
 }
